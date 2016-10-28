@@ -1,25 +1,20 @@
-import sys
 import asyncio
 import random
 
 import aiohttp
-import urllib3
 import telepot
 import telepot.aio.api
 from telepot.aio.delegate import per_chat_id, create_open, pave_event_space
 
+import config
 
-proxy_url = "http://proxy.server:3128"
 
-telepot.aio.api._pools = {
-    'default': aiohttp.ProxyConnector(proxy=proxy_url, limit=10)
-}
+if config.USE_PROXY:
+    telepot.aio.api._pools = {
+        'default': aiohttp.ProxyConnector(proxy=config.PROXY_URL, limit=10)
+    }
 
-telepot.aio.api._onetime_pool_spec = (aiohttp.ProxyConnector, dict(proxy=proxy_url, force_close=True))
-
-"""
-patriot bot
-"""
+    telepot.aio.api._onetime_pool_spec = (aiohttp.ProxyConnector, dict(proxy=config.PROXY_URL, force_close=True))
 
 
 class Patriot(telepot.aio.helper.ChatHandler):
@@ -46,17 +41,14 @@ class Patriot(telepot.aio.helper.ChatHandler):
         await self.sender.sendMessage('похоже, ты не достаточно патриот. вот немного лекарства')
         await self.sender.sendMessage(random.choice(self.music))
 
-        self.close()
-
     async def on__idle(self, event):
         await self.sender.sendMessage('судя по всему ты не хочешь скрепляться, вызываю гибдд')
         self.close()
 
-TOKEN = sys.argv[1]
 
-bot = telepot.aio.DelegatorBot(TOKEN, [
+bot = telepot.aio.DelegatorBot(config.TOKEN, [
     pave_event_space()(
-        per_chat_id(), create_open, Patriot, timeout=10),
+        per_chat_id(), create_open, Patriot),
 ])
 
 loop = asyncio.get_event_loop()
