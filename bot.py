@@ -2,20 +2,20 @@ import sys
 import asyncio
 import random
 
+import aiohttp
 import urllib3
 import telepot
-import telepot.api
+import telepot.aio.api
 from telepot.aio.delegate import per_chat_id, create_open, pave_event_space
-import telepot.api
 
 
 proxy_url = "http://proxy.server:3128"
 
-telepot.api._pools = {
-    'default': urllib3.ProxyManager(proxy_url=proxy_url, num_pools=3, maxsize=10, retries=False, timeout=30),
+telepot.aio.api._pools = {
+    'default': aiohttp.ProxyConnector(proxy=proxy_url, limit=10)
 }
-telepot.api._onetime_pool_spec = (urllib3.ProxyManager,
-                                  dict(proxy_url=proxy_url, num_pools=1, maxsize=1, retries=False, timeout=30))
+
+telepot.aio.api._onetime_pool_spec = (aiohttp.ProxyConnector, dict(proxy=proxy_url, force_close=True))
 
 """
 patriot bot
