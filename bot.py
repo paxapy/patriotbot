@@ -1,12 +1,20 @@
+import os
 import asyncio
 import random
+from types import SimpleNamespace
 
 import aiohttp
 import telepot
 import telepot.aio.api
 from telepot.aio.delegate import per_chat_id, create_open, pave_event_space
 
-import config
+try:
+    import config
+except ImportError:
+    config = SimpleNamespace()
+    config.TOKEN = os.environ['TOKEN']
+    config.USE_PROXY = os.environ.get('USE_PROXY', False)
+    config.PROXY_URL = os.environ.get('PROXY_URL', 'http://localhost:3128')
 
 
 if config.USE_PROXY:
