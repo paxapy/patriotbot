@@ -48,7 +48,7 @@ class Patriot(telepot.aio.helper.ChatHandler):
 
 bot = telepot.aio.DelegatorBot(config.TOKEN, [
     pave_event_space()(
-        per_chat_id(), create_open, Patriot),
+        per_chat_id(), create_open, Patriot, timeout=10),
 ])
 
 loop = asyncio.get_event_loop()
